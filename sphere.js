@@ -42,9 +42,16 @@ class Sphere{
      */
     setupBuffers()
     {
+        var sphereVertexPositions = new Float32Array(sphereSoup);
+        for (i=0; i<sphereVertexPositions.length; i+=3){
+            sphereVertexPositions[i] = sphereVertexPositions[i]*this.radius+this.position[0];
+            sphereVertexPositions[i+1]= sphereVertexPositions[i+1]*this.radius+this.position[1];
+            sphereVertexPositions[i+2]= sphereVertexPositions[i+2]*this.radius+this.position[2];
+        }
+        
         sphereVertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);      
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereSoup), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, sphereVertexPositions, gl.STATIC_DRAW);
         sphereVertexPositionBuffer.itemSize = 3;
         sphereVertexPositionBuffer.numItems = numT*3;
         console.log(sphereSoup.length/9);

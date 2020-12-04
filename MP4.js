@@ -5,8 +5,8 @@ var shaderProgram;
 
 
 var mySphere;
-mySphere = new Sphere(1.0,
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0), 
+mySphere = new Sphere(0.5,
+                      glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
