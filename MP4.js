@@ -11,12 +11,6 @@ mySphere = new Sphere(1.0,
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
 
-// Create a place to store sphere geometry
-var sphereVertexPositionBuffer;
-
-//Create a place to store normals for shading
-var sphereVertexNormalBuffer;
-
 // View parameters
 var eyePt = glMatrix.vec3.fromValues(0.0,0.0,40.0);
 var viewDir = glMatrix.vec3.fromValues(0.0,0.0,-1.0);
@@ -34,8 +28,6 @@ var pMatrix = glMatrix.mat4.create();
 
 var mvMatrixStack = [];
 
-// Light parameters
-
 //light position
 var lightx=1.0;
 var lighty=1.0;
@@ -52,47 +44,6 @@ function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}
 function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
 function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
 function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
-
-
-//-------------------------------------------------------------------------
-/**
- * Populates buffers with data for spheres
- */
-function setupSphereBuffers() {
-    sphereVertexPositionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);      
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereSoup), gl.STATIC_DRAW);
-    sphereVertexPositionBuffer.itemSize = 3;
-    sphereVertexPositionBuffer.numItems = numT*3;
-    console.log(sphereSoup.length/9);
-    
-    // Specify normals to be able to do lighting calculations
-    sphereVertexNormalBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereNormals),
-                  gl.STATIC_DRAW);
-    sphereVertexNormalBuffer.itemSize = 3;
-    sphereVertexNormalBuffer.numItems = numT*3;
-    
-    console.log("Normals ", sphereNormals.length/3);     
-}
-
-//-------------------------------------------------------------------------
-/**
- * Draws a sphere from the sphere buffer
- */
-function drawSphere(){
- gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
- gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, sphereVertexPositionBuffer.itemSize, 
-                         gl.FLOAT, false, 0, 0);
-
- // Bind normal buffer
- gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer);
- gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 
-                           sphereVertexNormalBuffer.itemSize,
-                           gl.FLOAT, false, 0, 0);
- gl.drawArrays(gl.TRIANGLES, 0, sphereVertexPositionBuffer.numItems);      
-}
 
 //-------------------------------------------------------------------------
 /**
@@ -309,7 +260,7 @@ function uploadLightsToShader(loc,a,d,s) {
  * Populate buffers with data
  */
 function setupBuffers() {
-    setupSphereBuffers();     
+    mySphere.setupBuffers();
 }
 
 //----------------------------------------------------------------------------------
@@ -346,7 +297,7 @@ function draw() {
     uploadLightsToShader([lightx,lighty,lightz],[alight,alight,alight],[dlight,dlight,dlight],[slight,slight,slight]);
     uploadMaterialToShader([R,G,B],[R,G,B],[1.0,1.0,1.0],shiny);
     setMatrixUniforms();
-    drawSphere();
+    mySphere.draw();
 }
 
 //----------------------------------------------------------------------------------
@@ -355,12 +306,12 @@ function draw() {
  * Where all the physics should happen
  */
 function animate() {
-    lightx= document.getElementById("xlight").value;
-    lighty= document.getElementById("ylight").value;
-    lightz =document.getElementById("zlight").value;
-    alight =document.getElementById("ambient").value;
-    dlight =document.getElementById("diffuse").value;
-    slight =document.getElementById("specular").value;
+    lightx = document.getElementById("xlight").value;
+    lighty = document.getElementById("ylight").value;
+    lightz = document.getElementById("zlight").value;
+    alight = document.getElementById("ambient").value;
+    dlight = document.getElementById("diffuse").value;
+    slight = document.getElementById("specular").value;
 }
 
 //----------------------------------------------------------------------------------

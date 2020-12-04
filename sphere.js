@@ -36,46 +36,44 @@ class Sphere{
         this.acceleration = acceleration;
         this.color = color;
     }
-    
+
     /**
-    * Send the buffer objects to WebGL for rendering 
-    */
-    loadBuffers()
+     * Populates buffers with data for spheres
+     */
+    setupBuffers()
     {
+        sphereVertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);      
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereSoup), gl.STATIC_DRAW);
         sphereVertexPositionBuffer.itemSize = 3;
         sphereVertexPositionBuffer.numItems = numT*3;
         console.log(sphereSoup.length/9);
-    
+
         // Specify normals to be able to do lighting calculations
-        
+        sphereVertexNormalBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereNormals),
-                  gl.STATIC_DRAW);
+                      gl.STATIC_DRAW);
         sphereVertexNormalBuffer.itemSize = 3;
         sphereVertexNormalBuffer.numItems = numT*3;
-    
-        console.log("Normals ", sphereNormals.length/3);   
-    }
-    
-    /**
-    * Render the triangles 
-    */
-    drawTriangles(){
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.VertexPositionBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.VertexPositionBuffer.itemSize, 
-                         gl.FLOAT, false, 0, 0);
 
-        // Bind normal buffer
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.VertexNormalBuffer);
-        gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 
-        this.VertexNormalBuffer.itemSize,
-                           gl.FLOAT, false, 0, 0);   
-    
-        //Draw 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.IndexTriBuffer);
-        gl.drawElements(gl.TRIANGLES, this.IndexTriBuffer.itemSize*this.IndexTriBuffer.numItems, gl.UNSIGNED_INT,0);
+        console.log("Normals ", sphereNormals.length/3);     
     }
-    
+
+    /**
+     * Draws a sphere from the sphere buffer
+     */
+    draw(){
+     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);
+     gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, sphereVertexPositionBuffer.itemSize, 
+                             gl.FLOAT, false, 0, 0);
+
+     // Bind normal buffer
+     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexNormalBuffer);
+     gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, 
+                               sphereVertexNormalBuffer.itemSize,
+                               gl.FLOAT, false, 0, 0);
+     gl.drawArrays(gl.TRIANGLES, 0, sphereVertexPositionBuffer.numItems);      
+    }
+
 }
