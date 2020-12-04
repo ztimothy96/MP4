@@ -1,18 +1,15 @@
-
-
 // WebGL context, canvas and shaderprogram objects
 var gl;
 var canvas;
 var shaderProgram;
 
-/**
+
 var mySphere;
 mySphere = new Sphere(1.0,
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
-*/ 
 
 // Create a place to store sphere geometry
 var sphereVertexPositionBuffer;
@@ -62,11 +59,6 @@ function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
  * Populates buffers with data for spheres
  */
 function setupSphereBuffers() {
-    
-    var sphereSoup=[];
-    var sphereNormals=[];
-    var numT=sphereFromSubdivision(6,sphereSoup,sphereNormals);
-    console.log("Generated ", numT, " triangles"); 
     sphereVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexPositionBuffer);      
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereSoup), gl.STATIC_DRAW);

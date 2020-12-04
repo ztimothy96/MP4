@@ -11,11 +11,13 @@ var sphereNormals = [];
 var numT= sphereFromSubdivision(6,sphereSoup,sphereNormals);
 console.log("Generated ", numT, " triangles"); 
 
-/**
- * Similarly, shared global buffers
- */
-var sphereVertexPositionBuffer = gl.createBuffer();
-var sphereVertexNormalBuffer = gl.createBuffer();
+// Create a place to store sphere geometry
+var sphereVertexPositionBuffer;
+
+//Create a place to store normals for shading
+var sphereVertexNormalBuffer;
+
+
 
 /** Class implementing 3D sphere. */
 class Sphere{   
