@@ -7,6 +7,7 @@ var prevTime = Date.now()*timeScale; // time of previous frame, in s
 
 var grav = glMatrix.vec3.fromValues(0.0, -10.0, 0.0); // the acceleration from gravity
 var restitution = 1.0; // energy loss from collisions
+var drag = 0.9; // drag to dampen the velocity
 var maxSpeed = 3; // fastest any sphere can travel in a given direction
 
 var mySphere0 = new Sphere(0.1,

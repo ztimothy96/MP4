@@ -139,6 +139,7 @@ class Sphere{
         var acceleration = grav;
         glMatrix.vec3.scale(temp, acceleration, dt);
         glMatrix.vec3.add(this.velocity, this.velocity, temp);
+        glMatrix.vec3.scale(this.velocity, this.velocity, Math.pow(drag, 2*dt));
     }
 
 }
