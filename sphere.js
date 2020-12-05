@@ -17,17 +17,18 @@ var sphereVertexPositionBuffer;
 //Create a place to store normals for shading
 var sphereVertexNormalBuffer;
 
-
-
-/** Class implementing 3D sphere. */
+/**
+* Class implementing 3D sphere. 
+* Keepts track of the model's triangle mesh and associated physics
+*/
 class Sphere{   
 /**
- * Initialize members of a Terrain object
- * @param {number} div Number of triangles along x axis and y axis
- * @param {number} minX Minimum X coordinate value
- * @param {number} maxX Maximum X coordinate value
- * @param {number} minY Minimum Y coordinate value
- * @param {number} maxY Maximum Y coordinate value
+ * Initialize members of a Sphere object
+ * @param {number} radius
+ * @param {vec3} position
+ * @param {vec3} velocity
+ * @param {vec3} acceleration
+ * @param {vec3} color: RGB values in range [0.0, 1.0]
  */
     constructor(radius, position, velocity, acceleration, color){
         this.radius = radius;
@@ -85,9 +86,15 @@ class Sphere{
     
     /**
      * Updates the physics parameters of the sphere
+     * @param{number} dt: the amount of time passed
      */
-    update(){
+    update(dt){
+        var temp = glMatrix.vec3.create();
+        glMatrix.vec3.scale(temp, this.velocity, dt);
+        glMatrix.vec3.add(this.position, this.position, temp);
         
+        glMatrix.vec3.scale(temp, this.acceleration, dt);
+        glMatrix.vec3.add(this.velocity, this.velocity, temp);
     }
 
 }

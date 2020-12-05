@@ -2,11 +2,14 @@
 var gl;
 var canvas;
 var shaderProgram;
+var timeScale = 0.001; //convert from ms to s
+var prevTime = Date.now()*timeScale; // time of previous frame, in s
+var grav = glMatrix.vec3.fromValues(0.0, -1.0, 0.0); // the acceleration due to the world's gravitational field
 
 var mySphere0 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(-0.2, 0.0, 0.0),
+                      grav,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0));
 var mySphere1 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(0.0, 0.0, -1.0), 
@@ -20,8 +23,8 @@ var mySphere2 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(0.0, 0.0, 1.0));
 var mySpheres = [];
 mySpheres.push(mySphere0);
-mySpheres.push(mySphere1);
-mySpheres.push(mySphere2);
+//mySpheres.push(mySphere1);
+//mySpheres.push(mySphere2);
 
 // View parameters
 var eyePt = glMatrix.vec3.fromValues(0.0,0.0,40.0);
@@ -311,7 +314,7 @@ function draw() {
  * Animation to be called from tick. Updates globals and performs animation for each tick.
  * Where all the physics should happen
  */
-function animate(now) {
+function animate() {
     if (justLiftedKeys[" "]){
         var sphere = new Sphere(0.05  + 0.05 * Math.random()**2,
                       glMatrix.vec3.fromValues(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5), 
@@ -327,8 +330,10 @@ function animate(now) {
         justLiftedKeys["Escape"] = false;
     }
     
+    var now = Date.now()*timeScale;
     for (var i=0; i<mySpheres.length; i++){
-        mySpheres[i].update();
+        mySpheres[i].update(now-prevTime);
+        prevTime = now;
     }
 
 }
