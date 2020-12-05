@@ -8,8 +8,8 @@
  */
 var sphereSoup = [];
 var sphereNormals = [];
-var numT= sphereFromSubdivision(6,sphereSoup,sphereNormals);
-console.log("Generated ", numT, " triangles"); 
+var numT = sphereFromSubdivision(6,sphereSoup,sphereNormals);
+//console.log("Generated ", numT, " triangles"); 
 
 // Create a place to store sphere geometry
 var sphereVertexPositionBuffer;
@@ -54,7 +54,7 @@ class Sphere{
         gl.bufferData(gl.ARRAY_BUFFER, sphereVertexPositions, gl.STATIC_DRAW);
         sphereVertexPositionBuffer.itemSize = 3;
         sphereVertexPositionBuffer.numItems = numT*3;
-        console.log(sphereSoup.length/9);
+        //console.log(sphereSoup.length/9);
 
         // Specify normals to be able to do lighting calculations
         sphereVertexNormalBuffer = gl.createBuffer();
@@ -64,7 +64,7 @@ class Sphere{
         sphereVertexNormalBuffer.itemSize = 3;
         sphereVertexNormalBuffer.numItems = numT*3;
 
-        console.log("Normals ", sphereNormals.length/3);     
+        //console.log("Normals ", sphereNormals.length/3);     
     }
 
     /**

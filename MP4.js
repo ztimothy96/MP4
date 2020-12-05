@@ -4,9 +4,15 @@ var canvas;
 var shaderProgram;
 
 
-var mySphere;
-mySphere = new Sphere(0.5,
+var mySphere0;
+var mySphere1;
+mySphere0 = new Sphere(0.5,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
+mySphere1 = new Sphere(1.0,
+                      glMatrix.vec3.fromValues(0.0, 0.0, -1.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
@@ -255,13 +261,6 @@ function uploadLightsToShader(loc,a,d,s) {
   gl.uniform3fv(shaderProgram.uniformSpecularLightColorLoc, s); 
 }
 
-//----------------------------------------------------------------------------------
-/**
- * Populate buffers with data
- */
-function setupBuffers() {
-    mySphere.setupBuffers();
-}
 
 //----------------------------------------------------------------------------------
 /**
@@ -280,8 +279,6 @@ function draw() {
     glMatrix.vec3.add(viewPt, eyePt, viewDir);
     // Then generate the lookat matrix and initialize the MV matrix to that view
     glMatrix.mat4.lookAt(mvMatrix,eyePt,viewPt,up); 
-
- 
     glMatrix.vec3.set(transformVec,20,20,20);
     glMatrix.mat4.scale(mvMatrix, mvMatrix,transformVec);
     
@@ -297,7 +294,11 @@ function draw() {
     uploadLightsToShader([lightx,lighty,lightz],[alight,alight,alight],[dlight,dlight,dlight],[slight,slight,slight]);
     uploadMaterialToShader([R,G,B],[R,G,B],[1.0,1.0,1.0],shiny);
     setMatrixUniforms();
-    mySphere.draw();
+    mySphere1.setupBuffers();
+    mySphere1.draw();
+    mySphere0.setupBuffers();
+    mySphere0.draw();
+
 }
 
 //----------------------------------------------------------------------------------
@@ -322,7 +323,6 @@ function animate() {
   canvas = document.getElementById("myGLCanvas");
   gl = createGLContext(canvas);
   setupShaders("shader-vs","shader-fs");
-  setupBuffers();
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
   tick();
