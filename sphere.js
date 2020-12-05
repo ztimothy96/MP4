@@ -82,5 +82,12 @@ class Sphere{
                                gl.FLOAT, false, 0, 0);
      gl.drawArrays(gl.TRIANGLES, 0, sphereVertexPositionBuffer.numItems);      
     }
+    
+    /**
+     * Updates the physics parameters of the sphere
+     */
+    update(){
+        
+    }
 
 }

@@ -3,21 +3,25 @@ var gl;
 var canvas;
 var shaderProgram;
 
-var mySphere0;
-var mySphere1;
-mySphere0 = new Sphere(0.5,
+var mySphere0 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0));
-mySphere1 = new Sphere(1.0,
+var mySphere1 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(0.0, 0.0, -1.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 1.0, 0.0));
+var mySphere2 = new Sphere(0.1,
+                      glMatrix.vec3.fromValues(-0.4, 0.0, 0.0), 
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, 0.0, 1.0));
 var mySpheres = [];
 mySpheres.push(mySphere0);
 mySpheres.push(mySphere1);
+mySpheres.push(mySphere2);
 
 // View parameters
 var eyePt = glMatrix.vec3.fromValues(0.0,0.0,40.0);
@@ -307,7 +311,25 @@ function draw() {
  * Animation to be called from tick. Updates globals and performs animation for each tick.
  * Where all the physics should happen
  */
-function animate() {
+function animate(now) {
+    if (justLiftedKeys[" "]){
+        var sphere = new Sphere(0.05  + 0.05 * Math.random()**2,
+                      glMatrix.vec3.fromValues(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5), 
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.1+Math.random(), 0.1+Math.random(), 0.1+Math.random()));
+        mySpheres.push(sphere);
+        justLiftedKeys[" "] = false;
+    }
+    
+    if (justLiftedKeys["Escape"]){
+        mySpheres = [];
+        justLiftedKeys["Escape"] = false;
+    }
+    
+    for (var i=0; i<mySpheres.length; i++){
+        mySpheres[i].update();
+    }
 
 }
 
@@ -321,6 +343,8 @@ function animate() {
   setupShaders("shader-vs","shader-fs");
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
+  document.onkeydown = handleKeyDown;
+  document.onkeyup = handleKeyUp;
   tick();
 }
 
@@ -334,3 +358,23 @@ function tick() {
     animate();
 }
 
+//----------------------------------------------------------------------------------
+/**
+ * Code to handle key presses
+ */
+
+var justLiftedKeys = {};
+function handleKeyDown(event){
+    if (event.key == " " || event.key == "Escape"){
+        console.log("Key down", event.key, " code ", event.code);
+        event.preventDefault();
+        justLiftedKeys[event.key] = false;
+    }
+}
+
+function handleKeyUp(event){
+    if (event.key == " " || event.key == "Escape"){
+        console.log("Key up ", event.key, " code ", event.code);
+        justLiftedKeys[event.key] = true;
+    }
+}
