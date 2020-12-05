@@ -3,19 +3,21 @@ var gl;
 var canvas;
 var shaderProgram;
 
-
 var mySphere0;
 var mySphere1;
 mySphere0 = new Sphere(0.5,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
+                      glMatrix.vec3.fromValues(1.0, 0.0, 0.0));
 mySphere1 = new Sphere(1.0,
                       glMatrix.vec3.fromValues(0.0, 0.0, -1.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0));
+                      glMatrix.vec3.fromValues(0.0, 1.0, 0.0));
+var mySpheres = [];
+mySpheres.push(mySphere0);
+mySpheres.push(mySphere1);
 
 // View parameters
 var eyePt = glMatrix.vec3.fromValues(0.0,0.0,40.0);
@@ -43,6 +45,9 @@ var lightz=1.0;
 var alight =0.0;
 var dlight =1.0;
 var slight =1.0;
+
+//shinines, of course
+var shiny = 100.0;
 
 //-----------------------------------------------------------------
 //Color conversion  helper functions
@@ -282,22 +287,18 @@ function draw() {
     glMatrix.vec3.set(transformVec,20,20,20);
     glMatrix.mat4.scale(mvMatrix, mvMatrix,transformVec);
     
-    //Get material color
-    colorVal = document.getElementById("mat-color").value
-    R = hexToR(colorVal)/255.0;
-    G = hexToG(colorVal)/255.0;
-    B = hexToB(colorVal)/255.0;
-    
-    //Get shiny
-    shiny = document.getElementById("shininess").value
-    
     uploadLightsToShader([lightx,lighty,lightz],[alight,alight,alight],[dlight,dlight,dlight],[slight,slight,slight]);
-    uploadMaterialToShader([R,G,B],[R,G,B],[1.0,1.0,1.0],shiny);
     setMatrixUniforms();
-    mySphere1.setupBuffers();
-    mySphere1.draw();
-    mySphere0.setupBuffers();
-    mySphere0.draw();
+    for (var i =0; i<mySpheres.length; i++){
+        //Get material color
+        colorVal = mySpheres[i].color;
+        R = colorVal[0];
+        G = colorVal[1];
+        B = colorVal[2];
+        uploadMaterialToShader([R,G,B],[R,G,B],[1.0,1.0,1.0],shiny);
+        mySpheres[i].setupBuffers();
+        mySpheres[i].draw();
+    }
 
 }
 
@@ -307,12 +308,7 @@ function draw() {
  * Where all the physics should happen
  */
 function animate() {
-    lightx = document.getElementById("xlight").value;
-    lighty = document.getElementById("ylight").value;
-    lightz = document.getElementById("zlight").value;
-    alight = document.getElementById("ambient").value;
-    dlight = document.getElementById("diffuse").value;
-    slight = document.getElementById("specular").value;
+
 }
 
 //----------------------------------------------------------------------------------
