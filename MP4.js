@@ -4,11 +4,11 @@ var canvas;
 var shaderProgram;
 var timeScale = 0.001; //convert from ms to s
 var prevTime = Date.now()*timeScale; // time of previous frame, in s
-var grav = glMatrix.vec3.fromValues(0.0, -1.0, 0.0); // the acceleration due to the world's gravitational field
+var grav = glMatrix.vec3.fromValues(0.0, -10.0, 0.0); // the acceleration due to the world's gravitational field
 
 var mySphere0 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
-                      glMatrix.vec3.fromValues(-0.2, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(-1.0, 0.0, 0.0),
                       grav,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0));
 var mySphere1 = new Sphere(0.1,
@@ -319,9 +319,10 @@ function animate() {
         var sphere = new Sphere(0.05  + 0.05 * Math.random()**2,
                       glMatrix.vec3.fromValues(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, -10.0, 0.0),
                       glMatrix.vec3.fromValues(0.1+Math.random(), 0.1+Math.random(), 0.1+Math.random()));
         mySpheres.push(sphere);
+        console.log(mySpheres.length);
         justLiftedKeys[" "] = false;
     }
     
@@ -371,7 +372,6 @@ function tick() {
 var justLiftedKeys = {};
 function handleKeyDown(event){
     if (event.key == " " || event.key == "Escape"){
-        console.log("Key down", event.key, " code ", event.code);
         event.preventDefault();
         justLiftedKeys[event.key] = false;
     }
@@ -379,7 +379,6 @@ function handleKeyDown(event){
 
 function handleKeyUp(event){
     if (event.key == " " || event.key == "Escape"){
-        console.log("Key up ", event.key, " code ", event.code);
         justLiftedKeys[event.key] = true;
     }
 }

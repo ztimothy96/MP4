@@ -9,13 +9,32 @@
 var sphereSoup = [];
 var sphereNormals = [];
 var numT = sphereFromSubdivision(6,sphereSoup,sphereNormals);
-//console.log("Generated ", numT, " triangles"); 
 
 // Create a place to store sphere geometry
 var sphereVertexPositionBuffer;
 
-//Create a place to store normals for shading
+// Create a place to store normals for shading
 var sphereVertexNormalBuffer;
+
+// Why doesn't Javascript already have an argmax function?
+function argmax(arr) {
+    if (arr.length === 0) {
+        return -1;
+    }
+
+    var max = arr[0];
+    var maxIndex = 0;
+
+    for (var i = 1; i < arr.length; i++) {
+        if (arr[i] > max) {
+            maxIndex = i;
+            max = arr[i];
+        }
+    }
+
+    return maxIndex;
+}
+
 
 /**
 * Class implementing 3D sphere. 
@@ -55,7 +74,6 @@ class Sphere{
         gl.bufferData(gl.ARRAY_BUFFER, sphereVertexPositions, gl.STATIC_DRAW);
         sphereVertexPositionBuffer.itemSize = 3;
         sphereVertexPositionBuffer.numItems = numT*3;
-        //console.log(sphereSoup.length/9);
 
         // Specify normals to be able to do lighting calculations
         sphereVertexNormalBuffer = gl.createBuffer();
@@ -63,9 +81,7 @@ class Sphere{
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sphereNormals),
                       gl.STATIC_DRAW);
         sphereVertexNormalBuffer.itemSize = 3;
-        sphereVertexNormalBuffer.numItems = numT*3;
-
-        //console.log("Normals ", sphereNormals.length/3);     
+        sphereVertexNormalBuffer.numItems = numT*3;   
     }
 
     /**
@@ -86,15 +102,42 @@ class Sphere{
     
     /**
      * Updates the physics parameters of the sphere
-     * @param{number} dt: the amount of time passed
+     * @param{number} dt: the amount of time passed (in s)
      */
     update(dt){
         var temp = glMatrix.vec3.create();
         glMatrix.vec3.scale(temp, this.velocity, dt);
         glMatrix.vec3.add(this.position, this.position, temp);
         
-        glMatrix.vec3.scale(temp, this.acceleration, dt);
-        glMatrix.vec3.add(this.velocity, this.velocity, temp);
+        // check whether new position collides with the box [-1, 1]^3
+        var dim = argmax([Math.abs(this.position[0]), Math.abs(this.position[1]), Math.abs(this.position[2])]);
+        
+        if (Math.abs(this.position[dim]) > 1.0){
+        // if so, find the normal vector of the wall
+            
+            var normal = glMatrix.vec3.fromValues(0.0, 0.0, 0.0);
+            if (this.position[dim] > 0.0){
+                normal[dim]+= -1.0;
+            }
+            else{
+                normal[dim]+= 1.0;
+            }
+            
+            // compute reflection vector
+            var incident = glMatrix.vec3.clone(temp);
+            var reflection = glMatrix.vec3.create();
+            glMatrix.vec3.scale(temp, normal, 2*glMatrix.vec3.dot(incident, normal));
+            glMatrix.vec3.subtract(reflection, incident, temp);
+            
+            // update physics
+            var scale = glMatrix.vec3.length(this.velocity) / glMatrix.vec3.length(reflection);
+            glMatrix.vec3.scale(this.velocity, reflection, scale);
+        }
+        else{
+            glMatrix.vec3.scale(temp, this.acceleration, dt);
+            glMatrix.vec3.add(this.velocity, this.velocity, temp);
+        }
+        
     }
 
 }
