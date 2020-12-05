@@ -46,14 +46,12 @@ class Sphere{
  * @param {number} radius
  * @param {vec3} position
  * @param {vec3} velocity
- * @param {vec3} acceleration
  * @param {vec3} color: RGB values in range [0.0, 1.0]
  */
-    constructor(radius, position, velocity, acceleration, color){
+    constructor(radius, position, velocity, color){
         this.radius = radius;
         this.position = position;
         this.velocity = velocity;
-        this.acceleration = acceleration;
         this.color = color;
     }
 
@@ -105,6 +103,7 @@ class Sphere{
      * @param{number} dt: the amount of time passed (in s)
      */
     update(dt){
+        // update position
         var temp = glMatrix.vec3.create();
         glMatrix.vec3.scale(temp, this.velocity, dt);
         glMatrix.vec3.add(this.position, this.position, temp);
@@ -113,14 +112,16 @@ class Sphere{
         var dim = argmax([Math.abs(this.position[0]), Math.abs(this.position[1]), Math.abs(this.position[2])]);
         
         if (Math.abs(this.position[dim]) > 1.0){
-        // if so, find the normal vector of the wall
+        // if so, find the normal vector of the wall and adjust position
             
             var normal = glMatrix.vec3.fromValues(0.0, 0.0, 0.0);
             if (this.position[dim] > 0.0){
                 normal[dim]+= -1.0;
+                this.position[dim] = 1.0 - this.radius;
             }
             else{
                 normal[dim]+= 1.0;
+                this.position[dim] = -1.0 + this.radius;
             }
             
             // compute reflection vector
@@ -129,15 +130,15 @@ class Sphere{
             glMatrix.vec3.scale(temp, normal, 2*glMatrix.vec3.dot(incident, normal));
             glMatrix.vec3.subtract(reflection, incident, temp);
             
-            // update physics
+            // update velocity due to collision
             var scale = glMatrix.vec3.length(this.velocity) / glMatrix.vec3.length(reflection);
-            glMatrix.vec3.scale(this.velocity, reflection, scale);
-        }
-        else{
-            glMatrix.vec3.scale(temp, this.acceleration, dt);
-            glMatrix.vec3.add(this.velocity, this.velocity, temp);
+            glMatrix.vec3.scale(this.velocity, reflection, scale*restitution);
         }
         
+        //update acceleration
+        var acceleration = grav;
+        glMatrix.vec3.scale(temp, acceleration, dt);
+        glMatrix.vec3.add(this.velocity, this.velocity, temp);
     }
 
 }

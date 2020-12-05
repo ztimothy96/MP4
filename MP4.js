@@ -4,26 +4,26 @@ var canvas;
 var shaderProgram;
 var timeScale = 0.001; //convert from ms to s
 var prevTime = Date.now()*timeScale; // time of previous frame, in s
-var grav = glMatrix.vec3.fromValues(0.0, -10.0, 0.0); // the acceleration due to the world's gravitational field
+
+var grav = glMatrix.vec3.fromValues(0.0, -10.0, 0.0); // the acceleration from gravity
+var restitution = 1.0; // energy loss from collisions
+var maxSpeed = 3; // fastest any sphere can travel in a given direction
 
 var mySphere0 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0), 
-                      glMatrix.vec3.fromValues(-1.0, 0.0, 0.0),
-                      grav,
+                      glMatrix.vec3.fromValues(-maxSpeed, 0.0, 0.0),
                       glMatrix.vec3.fromValues(1.0, 0.0, 0.0));
 var mySphere1 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(0.0, 0.0, -1.0), 
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
+                      glMatrix.vec3.fromValues(0.0, maxSpeed, 0.0),
                       glMatrix.vec3.fromValues(0.0, 1.0, 0.0));
 var mySphere2 = new Sphere(0.1,
                       glMatrix.vec3.fromValues(-0.4, 0.0, 0.0), 
                       glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
                       glMatrix.vec3.fromValues(0.0, 0.0, 1.0));
 var mySpheres = [];
 mySpheres.push(mySphere0);
-//mySpheres.push(mySphere1);
+mySpheres.push(mySphere1);
 //mySpheres.push(mySphere2);
 
 // View parameters
@@ -296,7 +296,7 @@ function draw() {
     
     uploadLightsToShader([lightx,lighty,lightz],[alight,alight,alight],[dlight,dlight,dlight],[slight,slight,slight]);
     setMatrixUniforms();
-    for (var i =0; i<mySpheres.length; i++){
+    for (var i=0; i<mySpheres.length; i++){
         //Get material color
         colorVal = mySpheres[i].color;
         R = colorVal[0];
@@ -316,13 +316,11 @@ function draw() {
  */
 function animate() {
     if (justLiftedKeys[" "]){
-        var sphere = new Sphere(0.05  + 0.05 * Math.random()**2,
+        var sphere = new Sphere(0.05  + 0.05 * Math.pow(Math.random(), 2),
                       glMatrix.vec3.fromValues(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5), 
-                      glMatrix.vec3.fromValues(0.0, 0.0, 0.0),
-                      glMatrix.vec3.fromValues(0.0, -10.0, 0.0),
+                      glMatrix.vec3.fromValues(2*maxSpeed*(Math.random()-0.5), 2*maxSpeed*(Math.random()-0.5), 2*maxSpeed*(Math.random()-0.5)), 
                       glMatrix.vec3.fromValues(0.1+Math.random(), 0.1+Math.random(), 0.1+Math.random()));
         mySpheres.push(sphere);
-        console.log(mySpheres.length);
         justLiftedKeys[" "] = false;
     }
     
@@ -334,9 +332,8 @@ function animate() {
     var now = Date.now()*timeScale;
     for (var i=0; i<mySpheres.length; i++){
         mySpheres[i].update(now-prevTime);
-        prevTime = now;
     }
-
+    prevTime = now;
 }
 
 //----------------------------------------------------------------------------------
